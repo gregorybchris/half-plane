@@ -6,9 +6,9 @@
 	<link rel="icon" type="image/ico" href="images/icons/favicon.ico">
 
 	<meta charset="utf-8" />
-	<meta name="description" content="Chan's Algorithm Demo">
+	<meta name="description" content="Half-Plane Range Reporting Demo">
 	<meta name="keywords" content="Chris,Gregory,Computational,
-		Geometry,Comp163,Javascript,Computer,Science,Tufts,University">
+		Geometry,Comp150,Javascript,Computer,Science,Tufts,University">
 	<meta name="author" content="Chris Gregory">
 
 	<link href="styles/reset.css" rel="stylesheet" type="text/css">
@@ -25,64 +25,55 @@
 </head>
 <body>
 	<div class="header">
-		<div class="title">Half-Plane Range Reporting Demo</div>
-		<div class="credits">Chris Gregory &copy; 2017</div>
+		<div class="title">Half-Plane Range Reporting</div>
+		<div class="credits">Chris Gregory &copy; 2018</div>
 	</div>
 
 	<div class="content">
-		<div class="graphics-panel">
-			<svg id="graphics" class="graphics"></svg>
-		</div><div class="dialog-panel">
+		<div class="dialog-panel">
 			<div class="explanation">
-				<span class="step-counter">Step:&nbsp; <span id="step">0</span>&nbsp;of&nbsp; 5</span>
-
 				<!-- WELCOME STEP -->
 				<div data-step="0" class="explanation-section">
 					<p class="explanation-text">This is a demo of
 						<a class="link" href="https://en.wikipedia.org/wiki/Fractional_cascading#Applications" target="_blank">half-plane range reporting</a>,
-						which is the problem of listing all points in the plane that intersect a query
+						the problem of listing all points in the plane that intersect a query
 						<a class="link" href="https://en.wikipedia.org/wiki/Half-space_(geometry)" target="_blank">half-plane</a>.
 						With a preprocessing step and an efficient data structure an output-sensitive method is possible.</p>
 					<p class="explanation-text">First, an algorithm by
 						<a class="link" href="http://ieeexplore.ieee.org/document/1057060/" target="_blank">Bernard Chazelle (1985)</a>
 						is used to construct the
 						<a class="link" href="https://en.wikipedia.org/wiki/Convex_layers" target="_blank">convex layers</a>
-						for <span class="emph">n</span> points in the plane with <span class="big-o">O(n)</span>
-						space in <span class="big-o">O(nlogn)</span> time. Then,
+						for <span class="emph">n</span> points in the plane in <span class="big-o">O(nlogn)</span> time. Then,
 						<a class="link" href="https://en.wikipedia.org/wiki/Fractional_cascading" target="_blank">fractional cascading</a>
-						is used to allow queries in <span class="big-o">O(logn + h)</span> time where <span class="emph">h</span> is the output size.</p>
+						is used to query in <span class="big-o">O(logn + h)</span> time where <span class="emph">h</span> is the output size.</p>
 					<p class="explanation-text">Hit the
 						<a href="https://en.wikipedia.org/wiki/Space_bar" target="_blank" class="link">space bar</a>
-						or use the buttons below to walk through the
-						steps of the algorithm.</p>
+					 to walk through the demo.</p>
 
-					<br /><br />
+					<br />
 					<p class="explanation-text">
-						Additional resources:
+                        <br />
+                        &nbsp; Convex layers:
 						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="http://ieeexplore.ieee.org/document/1057060/" target="_blank" class="link">Computing convex layers</a>
+						<a href="http://ieeexplore.ieee.org/document/1057060/" target="_blank" class="link">Chazelle</a>
+                        <a href="https://www.sciencedirect.com/science/article/pii/0020019096001160" target="_blank" class="link">Nielsen</a>
+                        <a href="https://arxiv.org/abs/1702.06829" target="_blank" class="link">Rufai & Richards</a>
+                        <br /><br />
+                        &nbsp; Additional resources:
 						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="http://kam.mff.cuni.cz/~matousek/aga-mat-dynamic.pdf" target="_blank" class="link">Dynamic applications</a>
-						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611973068.21" target="_blank" class="link">Extension to 3D</a>
-						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="https://bost.ocks.org/mike/algorithms" target="_blank" class="link">Visualizing algorithms</a>
-						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="https://github.com/gregorybchris" target="_blank" class="link">Demo source code</a>
-						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="https://d3js.org" target="_blank" class="link">D3.js</a>
-						<a href="http://velocityjs.org" target="_blank" class="link">Velocity.js</a>
-						<a href="http://lesscss.org/" target="_blank" class="link">Less.js</a>
+                        <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="https://github.com/gregorybchris/half-plane" target="_blank" class="link">Demo source</a>
 					</p>
 				</div>
 
 				<!-- POINT CREATION STEP -->
 				<div data-step="1" class="explanation-section">
 					<p class="explanation-text">First, let's add some points to our plane.
-						You can <span class="emph">click to the left</span> to add your own points or <span class="emph">press P</span>
-						to add random points.</p>
-					<p class="explanation-text">In the next few steps we will be grouping our point set into
-						smaller convex hulls and then finding the convex hull of those smaller hulls.</p>
+						You can <span class="emph">click to the right</span> to add your own points or <span class="emph">press P</span>
+						to add random points. In the next step we will be building convex layers from these points.</p>
+					<p class="explanation-text"></p>
 					<p class="explanation-text">Hit the <span class="emph">space bar</span> when you are ready to continue.</p>
 				</div>
 
@@ -94,80 +85,13 @@
 					<p class="explanation-text">In this example <span class="emph">m</span> is set to <span class="emph">5</span> and each color
 						represents a group of <span class="emph">m</span> points.</p>
 				</div>
-
-				<!-- GRAHAM SCAN STEP -->
-				<div data-step="3" class="explanation-section">
-					<p class="explanation-text">Given these groups of <span class="emph">m</span>
-						points, we find the convex hull of
-						each group with an <span class="big-o">O(nlogn)</span>
-						algorithm. In this demo we use
-						<a class="link" href="https://en.wikipedia.org/wiki/Graham_scan" target="_blank">Graham Scan</a>.</p>
-					<p class="explanation-text">Because each group has size <span class="emph">m</span>
-						we can convex hull each group in <span class="big-o">O(mlogm)</span>.
-						There are <span class="big-o">O(n/m)</span> groups.</p>
-					<p class="explanation-text">In total this step takes <span class="big-o">O(nlogm)</span> time.</p>
-				</div>
-
-				<!-- JARVIS MARCH STEP -->
-				<div data-step="4" class="explanation-section">
-					<p class="explanation-text">We then use
-						<a class="link" href="https://en.wikipedia.org/wiki/Gift_wrapping_algorithm" target="_blank">Gift wrapping</a>,
-						an <span class="big-o">O(nh)</span> algorithm on the small convex hulls.</p>
-					<p class="explanation-text">To use gift wrapping on convex hulls rather than points we
-						can perform a
-						<a class="link" href="https://en.wikipedia.org/wiki/Binary_search_algorithm" target="_blank">binary search</a>
-						to determine the
-						<a class="link" href="https://en.wikipedia.org/wiki/Tangent" target="_blank">tangent</a>
-						between an extreme point and a convex hull.
-						A binary search on a small convex hull takes <span class="big-o">O(logm)</span>.</p>
-					<p class="explanation-text">We can compute tangents for all <span class="big-o">O(n/m)</span>
-						groups in <span class="big-o">O(n/m * logm)</span> time. We use the tangent with the largest angle.
-						By doing this we get one edge of the overall convex hull.
-						We must do this for all <span class="emph">h</span> hull points.</p>
-					<p class="explanation-text">We can assume for now that <span class="emph">m</span> < <span class="emph">h</span> so this step is
-						<span class="big-o">O(nlogh)</span> like the last step.</p>
-					<p class="explanation-text">We have to be careful that we do not exceed <span class="emph">h</span>
-						iterations of gift wrapping given our <span class="big-o">O(n/m)</span> input size.
-						Therefore, we halt gift wrapping execution after <span class="emph">m</span> iterations.</p>
-				</div>
-
-				<!-- COMPLETED HULL STEP -->
-				<div data-step="5" class="explanation-section">
-					<p class="explanation-text">We want to increase <span class="emph">m</span> until it equals <span class="emph">h</span>.
-						If we increase <span class="emph">m</span> too slowly our gift wrapping time overall will surpass
-						<span class="big-o">O(nlogh)</span>. On the other hand, if we increase <span class="emph">m</span> too quickly
-						some gift wrapping iteration will take much more than <span class="big-o">O(nlogh)</span> on its own.</p>
-					<p class="explanation-text">To solve this problem we can utilize a
-						<a class="link" href="https://en.wikipedia.org/wiki/Double_exponential_function" target="_blank">double exponential</a>.
-						We let
-						<span class="emph">m</span> = <span class="emph">2<sup>2<sup>t</sup></sup></span>
-						where <span class="emph">t</span> is the current iteration number.</p>
-					<p class="explanation-text">We throw away the work we do in each attempt
-						at finding an <span class="emph">m</span> equal to <span class="emph">h</span>. Because iterations
-						form a
-						<a class="link" href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank">geometric series</a>
-						the total work is still <span class="big-o">O(nlogh)</span>.</p>
-						<p class="explanation-text">We now have the convex hull of our orignal point set.</p>
-						<p class="explanation-text">Press restart to try it again!</p>
-
-				</div>
 			</div>
-
-			<div class="navigation">
-				<div id="restart-button" class="nav-button">
-					<span class="nav-button-text">Restart</span>
-				</div>
-				<!-- <div id="replay-button" class="nav-button">
-					<span class="nav-button-text">Replay</span>
-				</div> -->
-				<div id="next-button" class="nav-button">
-					<span class="nav-button-text">Next</span>
-				</div>
-			</div>
+		</div><div class="graphics-panel">
+			<svg id="graphics"></svg>
 		</div>
 	</div>
 
-	<script type="text/javascript" src="scripts/demo/graphics.js"></script>
-	<script type="text/javascript" src="scripts/demo/demo.js"></script>
+    <!-- <script type="text/javascript" src="scripts/demo/demo.js"></script> -->
+	<script type="module" src="scripts/demo/main.js"></script>
 </body>
 </html>
