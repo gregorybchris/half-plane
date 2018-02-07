@@ -126,12 +126,20 @@ export class Demo {
             for (var i = 0; i < convexLayer.length - 1; i++) {
                 let pt1 = convexLayer[i], pt2 = convexLayer[i + 1];
                 let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
-                let newEdge = this.plane.drawEdge(x1, y1, x2, y2, color, 5);
+                let newEdge = this.plane.drawEdge(x1, y1, x1, y1, color, 5);
+                newEdge.transition()
+                    .duration(1200)
+                    .attr("x2", x2)
+                    .attr("y2", y2);
                 edgeLayer.push(newEdge);
             }
             let pt1 = convexLayer[convexLayer.length - 1], pt2 = convexLayer[0];
             let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
-            let lastEdge = this.plane.drawEdge(x1, y1, x2, y2, color, 5);
+            let lastEdge = this.plane.drawEdge(x1, y1, x1, y1, color, 5);
+            lastEdge.transition()
+                .duration(1200)
+                .attr("x2", x2)
+                .attr("y2", y2);
             edgeLayer.push(lastEdge);
             edgeLayer.forEach(function(edge) {
                 this.addListenersToEdge(edge);
@@ -154,7 +162,10 @@ export class Demo {
         console.log("Run List Build Step");
 
         let planeSVG = this.plane.getSVG();
-        planeSVG.attr("transform", "translate(0, 200) scale(0.5)");
+        planeSVG.transition()
+            .duration(2000)
+            .attr("transform", "translate(0, 200) scale(0.5)");
+
     }
 
     runQueryStep() {
