@@ -56,19 +56,22 @@
                         &nbsp; Convex layers:
 						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="http://ieeexplore.ieee.org/document/1057060/" target="_blank" class="link">Chazelle</a>
+                        <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="https://www.sciencedirect.com/science/article/pii/0020019096001160" target="_blank" class="link">Nielsen</a>
+                        <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="https://arxiv.org/abs/1702.06829" target="_blank" class="link">Rufai & Richards</a>
                         <br /><br />
                         &nbsp; Additional resources:
 						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<a href="http://kam.mff.cuni.cz/~matousek/aga-mat-dynamic.pdf" target="_blank" class="link">Dynamic applications</a>
-						<a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611973068.21" target="_blank" class="link">Extension to 3D</a>
+                        <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611973068.21" target="_blank" class="link">Extension to 3D</a>
                         <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="https://github.com/gregorybchris/half-plane" target="_blank" class="link">Demo source</a>
 					</p>
 				</div>
 
-				<!-- POINT CREATION STEP -->
+				<!-- POPULATION STEP -->
 				<div data-step="1" class="explanation-section">
 					<p class="explanation-text">First, let's add some points to our plane.
 						You can <span class="emph">click to the right</span> to add your own points or <span class="emph">press P</span>
@@ -77,21 +80,57 @@
 					<p class="explanation-text">Hit the <span class="emph">space bar</span> when you are ready to continue.</p>
 				</div>
 
-				<!-- GROUPING STEP -->
+				<!-- HULL STEP -->
 				<div data-step="2" class="explanation-section">
-					<p class="explanation-text">Now that we have our points, we pick some small constant <span class="emph">m</span>.
-						The choice of <span class="emph">m</span> will be explained later in the demo.</p>
-					<p class="explanation-text">We partition our point set into groups of <span class="emph">m</span> points.</p>
-					<p class="explanation-text">In this example <span class="emph">m</span> is set to <span class="emph">5</span> and each color
-						represents a group of <span class="emph">m</span> points.</p>
+					<p class="explanation-text">
+                        Now that we have our points, we run an <span class="big-o">O(nlogn)</span>
+						convex layers algorithm. This produces a list of hulls that can be used to solve our larger problem of
+                        determining which points lie to one side of a query line.
+                    </p>
+                    <p class="explanation-text">
+                        The most popular of these algorithms was published by
+						<a href="http://ieeexplore.ieee.org/document/1057060/" target="_blank" class="link">Bernard Chazelle (1985)</a>,
+                        however more recent papers claiming simpler algorithms include
+                        <a href="https://www.sciencedirect.com/science/article/pii/0020019096001160" target="_blank" class="link">Nielsen (1996)</a> and
+                        <a href="https://arxiv.org/abs/1702.06829" target="_blank" class="link">Rufai & Richards (2017)</a>.
+					</p>
+				</div>
+
+                <!-- LIST BUILD STEP -->
+				<div data-step="3" class="explanation-section">
+					<p class="explanation-text">
+                        We can now visualize these convex layers by listing edges
+                        sorted by angle. For each layer determined in the last step you can see the
+                        correspondingly colored edge list above.
+                    </p>
+                    <p class="explanation-text">
+                        Try hovering over either elements in the lists or edges in the convex layers.
+                        Recall that the requirement for fractional cascading is a list of sorted lists.
+                        That is exactly what we have here. Continue to the next step to see how we can
+                        use this to our advantage in half-plane range reporting.
+                    </p>
+				</div>
+
+                <!-- QUERY STEP -->
+				<div data-step="4" class="explanation-section">
+					<p class="explanation-text">
+                        With these lists of sorted edges we perform the cascade step of fractional cascading.
+                        Now that we have lists of our convex layer edges sorted by angle
+                        we can perform the first step of fractional cascading.
+                    </p>
+                    <p class="explanation-text">
+                        Everything is done! You can now perform queries on the combined convex
+                        layers/fractional cascading data structure. To determine the points contained
+                        in a query half plane draw a line segment with your mouse over the convex layers.
+                        The order of the start and end points determines the direction of the half plane.
+                    </p>
 				</div>
 			</div>
 		</div><div class="graphics-panel">
-			<svg id="graphics"></svg>
+			<div id="graphics"></div>
 		</div>
 	</div>
 
-    <!-- <script type="text/javascript" src="scripts/demo/demo.js"></script> -->
 	<script type="module" src="scripts/demo/main.js"></script>
 </body>
 </html>
