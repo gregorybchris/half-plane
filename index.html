@@ -62,8 +62,10 @@
                         <a href="https://arxiv.org/abs/1702.06829" target="_blank" class="link">Rufai & Richards</a>
                         <br /><br />
                         &nbsp; Additional resources:
+                        <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+						<a href="https://link.springer.com/article/10.1007/BF01840386" target="_blank" class="link">Dynamic Input</a>
 						<br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-						<a href="http://kam.mff.cuni.cz/~matousek/aga-mat-dynamic.pdf" target="_blank" class="link">Dynamic applications</a>
+						<a href="http://kam.mff.cuni.cz/~matousek/aga-mat-dynamic.pdf" target="_blank" class="link">Applications</a>
                         <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <a href="http://epubs.siam.org/doi/abs/10.1137/1.9781611973068.21" target="_blank" class="link">Extension to 3D</a>
                         <br /> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -84,8 +86,9 @@
 				<div data-step="2" class="explanation-section">
 					<p class="explanation-text">
                         Now that we have our points, we run an <span class="big-o">O(nlogn)</span>
-						convex layers algorithm. This produces a list of hulls that can be used to solve our larger problem of
-                        determining which points lie to one side of a query line.
+						convex layers algorithm. Note that a single convex hull takes O(nlogn) to compute, so
+                        this method is very efficient. Most algorithms use a hull graph or hull tree data structure
+                        which can efficiently maintain the shape of the outer hull even as points are removed.
                     </p>
                     <p class="explanation-text">
                         The most popular of these algorithms was published by
@@ -94,6 +97,10 @@
                         <a href="https://www.sciencedirect.com/science/article/pii/0020019096001160" target="_blank" class="link">Nielsen (1996)</a> and
                         <a href="https://arxiv.org/abs/1702.06829" target="_blank" class="link">Rufai & Richards (2017)</a>.
 					</p>
+                    <p class="explanation-text">
+                        This produces a list of hulls that can be used to solve our larger problem of
+                        determining which points lie to one side of a query line.
+                    </p>
 				</div>
 
                 <!-- LIST BUILD STEP -->
@@ -115,11 +122,22 @@
 				<div data-step="4" class="explanation-section">
 					<p class="explanation-text">
                         With these lists of sorted edges we perform the cascade step of fractional cascading.
-                        Now that we have lists of our convex layer edges sorted by angle
-                        we can perform the first step of fractional cascading.
+                        Because we only take a constant fraction of each list per cascade we know by
+                        <a href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank" class="link">geometric series</a>
+                        that the largest list is still linear in it's original size.
                     </p>
                     <p class="explanation-text">
-                        Everything is done! You can now perform queries on the combined convex
+                        Now that each layer contains half of the elements of the layer below, efficient queries
+                        are possible. We took <span class="big-o">O(nlogn)</span> to build the convex layers
+                        and <span class="big-o">O(n)</span> to build the fractional cascading table for a total
+                        proprocessing step of <span class="big-o">O(nlogn)</span>. Queries in fractional cascading
+                        normally take <span class="big-o">O(logn + k)</span> where <span class="emph">k</span> is the number of
+                        lists. However, because we return <span class="emph">h</span> items
+                        our total query time is <span class="big-o">O(logn + h)</span>. We could do as well as <span class="big-o">O(logn)</span>
+                        if we return one element and as poorly as <span class="big-o">O(n)</span> if we return them all. This is optimal!
+                    </p>
+                    <p class="explanation-text">
+                        You can now perform queries on the combined convex
                         layers/fractional cascading data structure. To determine the points contained
                         in a query half plane draw a line segment with your mouse over the convex layers.
                         The order of the start and end points determines the direction of the half plane.

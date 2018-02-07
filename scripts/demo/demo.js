@@ -166,6 +166,7 @@ export class Demo {
             .duration(2000)
             .attr("transform", "translate(0, 200) scale(0.5)");
 
+        this.cascade.drawTables();
     }
 
     runQueryStep() {
