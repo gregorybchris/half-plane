@@ -42,15 +42,14 @@ export class Plane {
     }
 
     render() {
-        console.log("Plane render", this.svg);
-        console.log("Plane config", this.config);
+        // console.log("Plane render", this.svg);
+        // console.log("Plane config", this.config);
     }
 
     addMouseListener() {
         let _this = this;
         this.svg.on("mousedown", function() {
             let [x, y] = d3.mouse(this);
-            console.log("Click Plane", (x + ", " + y))
 			_this.drawPoint(x, y);
 		});
     }

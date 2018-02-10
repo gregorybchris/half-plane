@@ -77,7 +77,9 @@
 				<div data-step="1" class="explanation-section">
 					<p class="explanation-text">First, let's add some points to our plane.
 						You can <span class="emph">click to the right</span> to add your own points or <span class="emph">press P</span>
-						to add random points. In the next step we will be building convex layers from these points.</p>
+						to add <a href="https://stackoverflow.com/questions/29325069/how-to-generate-random-numbers-biased-towards-one-value-in-a-range" target="_blank" class="link">random</a>
+						points. In the next step we will be building <a class="link" href="https://en.wikipedia.org/wiki/Convex_layers" target="_blank">convex layers</a>
+						from these points.</p>
 					<p class="explanation-text"></p>
 					<p class="explanation-text">Hit the <span class="emph">space bar</span> when you are ready to continue.</p>
 				</div>
@@ -86,8 +88,8 @@
 				<div data-step="2" class="explanation-section">
 					<p class="explanation-text">
                         Now that we have our points, we run an <span class="big-o">O(nlogn)</span>
-						convex layers algorithm. Note that a single convex hull takes O(nlogn) to compute, so
-                        this method is very efficient. Most algorithms use a hull graph or hull tree data structure
+						convex layers algorithm. Recall that a single convex hull takes O(nlogn) to compute, so
+                        this method is very efficient. Many algorithms that achieve this complexity use a hull-graph data structure
                         which can efficiently maintain the shape of the outer hull even as points are removed.
                     </p>
                     <p class="explanation-text">
@@ -107,13 +109,14 @@
 				<div data-step="3" class="explanation-section">
 					<p class="explanation-text">
                         We can now visualize these convex layers by listing edges
-                        sorted by angle. For each layer determined in the last step you can see the
+                        <span class="emph">sorted by angle</span>. For each layer determined in the last step you can see the
                         correspondingly colored edge list above.
                     </p>
                     <p class="explanation-text">
-                        Try hovering over either elements in the lists or edges in the convex layers.
-                        Recall that the requirement for fractional cascading is a list of sorted lists.
-                        That is exactly what we have here. Continue to the next step to see how we can
+                        <span class="emph">Try hovering</span> over either elements in the lists or edges in the convex layers.
+                        Recall that the requirement for <a href="https://link.springer.com/article/10.1007%2FBF01840440" target="_blank" class="link">fractional cascading</a>
+						is a list of sorted lists.
+                        That is exactly what we have here. Press space to see how we can
                         use this to our advantage in half-plane range reporting.
                     </p>
 				</div>
@@ -122,13 +125,12 @@
 				<div data-step="4" class="explanation-section">
 					<p class="explanation-text">
                         With these lists of sorted edges we perform the cascade step of fractional cascading.
-                        Because we only take a constant fraction of each list per cascade we know by
+                        We promote a constant fraction of each list, so we know by
                         <a href="https://en.wikipedia.org/wiki/Geometric_series" target="_blank" class="link">geometric series</a>
                         that the largest list is still linear in it's original size.
                     </p>
                     <p class="explanation-text">
-                        Now that each layer contains half of the elements of the layer below, efficient queries
-                        are possible. We took <span class="big-o">O(nlogn)</span> to build the convex layers
+                        We took <span class="big-o">O(nlogn)</span> to build the convex layers
                         and <span class="big-o">O(n)</span> to build the fractional cascading table for a total
                         proprocessing step of <span class="big-o">O(nlogn)</span>. Queries in fractional cascading
                         normally take <span class="big-o">O(logn + k)</span> where <span class="emph">k</span> is the number of
@@ -137,10 +139,15 @@
                         if we return one element and as poorly as <span class="big-o">O(n)</span> if we return them all. This is optimal!
                     </p>
                     <p class="explanation-text">
-                        You can now perform queries on the combined convex
+                        You can now perform efficient queries on the combined convex
                         layers/fractional cascading data structure. To determine the points contained
-                        in a query half plane draw a line segment with your mouse over the convex layers.
-                        The order of the start and end points determines the direction of the half plane.
+                        in a query half plane <span class="emph">draw a line segment</span> with your mouse over the
+						convex layers at the bottom.
+                        (Note: The order of the start and end points determines the direction of the half plane.)
+                    </p>
+					<p class="explanation-text">
+                        I hope you enjoyed this demo! For any comments or suggestions please contact me through my
+						<a href="http://chrisgregory.me/contact" target="_blank" class="link">website</a>.
                     </p>
 				</div>
 			</div>

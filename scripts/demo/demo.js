@@ -53,7 +53,7 @@ export class Demo {
     }
 
     render() {
-        console.log("Demo Render");
+        // console.log("Demo Render");
         let [width, height] = this.getGraphicsDimensions();
         let planeSVG = this.plane.getSVG();
         planeSVG.attr("width", width)
@@ -124,14 +124,15 @@ export class Demo {
         this.plane.setEditable(false);
         let points = this.config.getPoints();
         let convexLayers = makeConvexLayers(points);
-        console.log("Convex Layers", convexLayers);
         this.config.setConvexLayers(convexLayers);
         let edgeLayers = this.convexLayersToEdgeLayers(convexLayers);
         this.config.setEdgeLayers(edgeLayers);
-        console.log("Edge Layers", edgeLayers);
+        console.log("Edge Layers: ", edgeLayers);
     }
 
     convexLayersToEdgeLayers(convexLayers) {
+        //TODO: Handle case with only one point in layer!!!
+        //TODO: Handle case where two lines are added when there are just two points in the innermost convex hull
         let edgeLayers = [];
         let strokeWidth = 5;
         convexLayers.forEach(function(convexLayer, layerNumber) {
@@ -155,7 +156,8 @@ export class Demo {
         let getY = pt => parseFloat(pt.attr("cy"));
         let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
         let edge = this.plane.drawEdge(x1, y1, x1, y1, color, strokeWidth);
-        let edgeData = { start: pt1, end: pt2, color: color };
+        let pointSize = parseInt(pt1.attr("r"));
+        let edgeData = { start: pt1, end: pt2, color: color, pointSize: pointSize };
         edge.datum(edgeData);
         edge.transition()
             .duration(1200)
@@ -168,9 +170,26 @@ export class Demo {
     addListenersToEdge(edge) {
         edge.on("mouseover", function() {
             edge.attr("stroke", "#FFF");
+            let edgeData = edge.datum();
+            //TODO: figure out why point radius freaks out when transitioning
+            // one edge then the edge next to it
+
+            // edgeData.start.transition()
+            //     .duration(300)
+            //     .attr("r", Math.round(edgeData.pointSize * 2));
+            // edgeData.end.transition()
+            //     .duration(300)
+            //     .attr("r", Math.round(edgeData.pointSize * 2));
         });
         edge.on("mouseout", function() {
             edge.attr("stroke", edge.attr("default-stroke"));
+            let edgeData = edge.datum();
+            // edgeData.start.transition()
+            //     .duration(300)
+            //     .attr("r", edgeData.pointSize);
+            // edgeData.end.transition()
+            //     .duration(300)
+            //     .attr("r", edgeData.pointSize);
         });
     }
 
