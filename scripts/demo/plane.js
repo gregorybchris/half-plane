@@ -10,15 +10,22 @@ export class Plane {
 
     createGraphicsLevels() {
         let [w, h] = this.getDimensions();
-        let edgeLevel = this.svg.append("g")
+        this.levelsSVG = this.svg.append("g")
+        let edgeLevel = this.levelsSVG.append("g")
             .attr("id", "edges")
             .attr("width", w)
             .attr("height", h);
-        let pointLevel = this.svg.append("g")
+        let pointLevel = this.levelsSVG.append("g")
             .attr("id", "points")
             .attr("width", w)
             .attr("height", h);
         this.levels = { points: pointLevel, edges: edgeLevel };
+    }
+
+    reduceSize() {
+        this.levelsSVG.transition()
+            .duration(2000)
+            .attr("transform", "translate(200, 320) scale(0.5)");
     }
 
     setEditable(editable) {
@@ -30,8 +37,8 @@ export class Plane {
     }
 
     clearAll() {
-        this.levels.point.selectAll("circle").remove();
-        this.levels.edge.selectAll("line").remove();
+        this.levels.points.selectAll("circle").remove();
+        this.levels.edges.selectAll("line").remove();
     }
 
     render() {
@@ -40,10 +47,10 @@ export class Plane {
     }
 
     addMouseListener() {
-        console.log("planesvg", this.svg)
         let _this = this;
         this.svg.on("mousedown", function() {
             let [x, y] = d3.mouse(this);
+            console.log("Click Plane", (x + ", " + y))
 			_this.drawPoint(x, y);
 		});
     }

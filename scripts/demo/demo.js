@@ -15,19 +15,22 @@ export class Demo {
 
         this.config = new Config();
         this.graphicsContainer = document.getElementById("graphics");
+        this.svg = d3.select(this.graphicsContainer);
         this.createGraphicsPanels();
         this.colors = ["#c0392b", "#d95A06", "#f1c40f", "#27ae60", "#1abc9c", "#2980b9", "#8e44ad", "#e84393"];
     }
 
     createGraphicsPanels() {
         let [w, h] = this.getGraphicsDimensions();
-        let planeSVG = d3.select(this.graphicsContainer).append("svg")
+        let planeSVG = this.svg.append("svg")
             .attr("id", "plane")
             .attr("width", w)
             .attr("height", h);
         this.plane = new Plane(planeSVG, this.config);
-        let cascadeSVG = d3.select(this.graphicsContainer).append("svg")
-            .attr("id", "cascade");
+        let cascadeSVG = planeSVG.append("svg")
+            .attr("id", "cascade")
+            .attr("width", w)
+            .attr("height", h);
         this.cascade = new Cascade(cascadeSVG, this.config);
         this.render();
         console.log("Demo Config", this.config);
@@ -97,12 +100,24 @@ export class Demo {
         }
     }
 
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+    // WELCOME_STEP
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+
     runWelcomeStep() {}
+
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+    // POPULATE_STEP
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     runPopulateStep() {
         console.log("Run Populate Step");
         this.plane.setEditable(true);
     }
+
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+    // HULL_STEP
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     runHullStep() {
         console.log("Run Hull Step");
@@ -117,36 +132,37 @@ export class Demo {
     }
 
     convexLayersToEdgeLayers(convexLayers) {
-        var getX = pt => parseFloat(pt.attr("cx"));
-        var getY = pt => parseFloat(pt.attr("cy"));
         let edgeLayers = [];
+        let strokeWidth = 5;
         convexLayers.forEach(function(convexLayer, layerNumber) {
             let color = this.colors[layerNumber % this.colors.length];
             let edgeLayer = [];
             for (var i = 0; i < convexLayer.length - 1; i++) {
                 let pt1 = convexLayer[i], pt2 = convexLayer[i + 1];
-                let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
-                let newEdge = this.plane.drawEdge(x1, y1, x1, y1, color, 5);
-                newEdge.transition()
-                    .duration(1200)
-                    .attr("x2", x2)
-                    .attr("y2", y2);
+                let newEdge = this.createEdge(pt1, pt2, color, strokeWidth);
                 edgeLayer.push(newEdge);
             }
             let pt1 = convexLayer[convexLayer.length - 1], pt2 = convexLayer[0];
-            let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
-            let lastEdge = this.plane.drawEdge(x1, y1, x1, y1, color, 5);
-            lastEdge.transition()
-                .duration(1200)
-                .attr("x2", x2)
-                .attr("y2", y2);
+            let lastEdge = this.createEdge(pt1, pt2, color, strokeWidth);
             edgeLayer.push(lastEdge);
-            edgeLayer.forEach(function(edge) {
-                this.addListenersToEdge(edge);
-            }.bind(this));
             edgeLayers.push(edgeLayer);
         }.bind(this));
         return edgeLayers;
+    }
+
+    createEdge(pt1, pt2, color, strokeWidth) {
+        let getX = pt => parseFloat(pt.attr("cx"));
+        let getY = pt => parseFloat(pt.attr("cy"));
+        let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
+        let edge = this.plane.drawEdge(x1, y1, x1, y1, color, strokeWidth);
+        let edgeData = { start: pt1, end: pt2, color: color };
+        edge.datum(edgeData);
+        edge.transition()
+            .duration(1200)
+            .attr("x2", x2)
+            .attr("y2", y2);
+        this.addListenersToEdge(edge);
+        return edge;
     }
 
     addListenersToEdge(edge) {
@@ -158,16 +174,20 @@ export class Demo {
         });
     }
 
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+    // LIST_BUILD_STEP
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+
     runListBuildStep() {
         console.log("Run List Build Step");
 
-        let planeSVG = this.plane.getSVG();
-        planeSVG.transition()
-            .duration(2000)
-            .attr("transform", "translate(0, 200) scale(0.5)");
-
+        this.plane.reduceSize();
         this.cascade.drawTables();
     }
+
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
+    // QUERY_STEP
+    // ~ ~ ~ ~ ~ ~ ~ ~ ~
 
     runQueryStep() {
         console.log("Run Query Step");
@@ -182,7 +202,8 @@ export class Demo {
             },
             function() {
                 this.config.reset();
-                this.plane.clearAll();
+                this.svg.selectAll("*").remove();
+                this.createGraphicsPanels();
                 this.updateText();
                 this.render();
             }.bind(this)
