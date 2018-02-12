@@ -127,26 +127,28 @@ export class Demo {
         this.config.setConvexLayers(convexLayers);
         let edgeLayers = this.convexLayersToEdgeLayers(convexLayers);
         this.config.setEdgeLayers(edgeLayers);
-        console.log("Edge Layers: ", edgeLayers);
     }
 
     convexLayersToEdgeLayers(convexLayers) {
-        //TODO: Handle case with only one point in layer!!!
-        //TODO: Handle case where two lines are added when there are just two points in the innermost convex hull
         let edgeLayers = [];
         let strokeWidth = 5;
         convexLayers.forEach(function(convexLayer, layerNumber) {
-            let color = this.colors[layerNumber % this.colors.length];
-            let edgeLayer = [];
-            for (var i = 0; i < convexLayer.length - 1; i++) {
-                let pt1 = convexLayer[i], pt2 = convexLayer[i + 1];
-                let newEdge = this.createEdge(pt1, pt2, color, strokeWidth);
-                edgeLayer.push(newEdge);
+            if (convexLayer.length != 1) {
+                let color = this.colors[layerNumber % this.colors.length];
+                let edgeLayer = [];
+                for (var i = 0; i < convexLayer.length - 1; i++) {
+                    let pt1 = convexLayer[i], pt2 = convexLayer[i + 1];
+                    let newEdge = this.createEdge(pt1, pt2, color, strokeWidth);
+                    edgeLayer.push(newEdge);
+                }
+                if (convexLayer.length != 2) {
+                    let pt1 = convexLayer[convexLayer.length - 1], pt2 = convexLayer[0];
+                    let lastEdge = this.createEdge(pt1, pt2, color, strokeWidth);
+                    edgeLayer.push(lastEdge);
+                }
+                let sortedEdgeLayer = this.sortByAngle(edgeLayer);
+                edgeLayers.push(sortedEdgeLayer);
             }
-            let pt1 = convexLayer[convexLayer.length - 1], pt2 = convexLayer[0];
-            let lastEdge = this.createEdge(pt1, pt2, color, strokeWidth);
-            edgeLayer.push(lastEdge);
-            edgeLayers.push(edgeLayer);
         }.bind(this));
         return edgeLayers;
     }
@@ -157,40 +159,19 @@ export class Demo {
         let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
         let edge = this.plane.drawEdge(x1, y1, x1, y1, color, strokeWidth);
         let pointSize = parseInt(pt1.attr("r"));
-        let edgeData = { start: pt1, end: pt2, color: color, pointSize: pointSize };
+        let edgeData = {
+            start: pt1,
+            end: pt2,
+            color: color,
+            pointSize: pointSize,
+            boxes: []
+        };
         edge.datum(edgeData);
         edge.transition()
             .duration(1200)
             .attr("x2", x2)
             .attr("y2", y2);
-        this.addListenersToEdge(edge);
         return edge;
-    }
-
-    addListenersToEdge(edge) {
-        edge.on("mouseover", function() {
-            edge.attr("stroke", "#FFF");
-            let edgeData = edge.datum();
-            //TODO: figure out why point radius freaks out when transitioning
-            // one edge then the edge next to it
-
-            // edgeData.start.transition()
-            //     .duration(300)
-            //     .attr("r", Math.round(edgeData.pointSize * 2));
-            // edgeData.end.transition()
-            //     .duration(300)
-            //     .attr("r", Math.round(edgeData.pointSize * 2));
-        });
-        edge.on("mouseout", function() {
-            edge.attr("stroke", edge.attr("default-stroke"));
-            let edgeData = edge.datum();
-            // edgeData.start.transition()
-            //     .duration(300)
-            //     .attr("r", edgeData.pointSize);
-            // edgeData.end.transition()
-            //     .duration(300)
-            //     .attr("r", edgeData.pointSize);
-        });
     }
 
     // ~ ~ ~ ~ ~ ~ ~ ~ ~
@@ -210,6 +191,48 @@ export class Demo {
 
     runQueryStep() {
         console.log("Run Query Step");
+        let edgeLayers = this.config.getEdgeLayers();
+        let newEdgeLayers = edgeLayers.map(edgeLayer => edgeLayer.slice());
+        for (var i = newEdgeLayers.length - 1; i > 0 ; i--) {
+            let edgeLayer = newEdgeLayers[i];
+            let nextEdgeLayer = newEdgeLayers[i - 1];
+            let evenEdges = edgeLayer.filter((e, idx) => idx % 2 === 0);
+            let mergedLayer = this.mergeByAngle(nextEdgeLayer, evenEdges);
+            newEdgeLayers[i - 1] = mergedLayer;
+        }
+        this.config.setEdgeLayers(newEdgeLayers);
+        this.cascade.drawTables();
+    }
+
+    mergeByAngle(layer1, layer2) {
+        let i = 0, j = 0;
+        let result = [];
+        while (i < layer1.length && j < layer2.length) {
+            if (this.getEdgeAngle(layer1[i]) < this.getEdgeAngle(layer2[j]))
+                result.push(layer1[i++]);
+            else
+                result.push(layer2[j++]);
+        }
+        while (i < layer1.length)
+            result.push(layer1[i++]);
+        while (j < layer2.length)
+            result.push(layer2[j++]);
+        return result;
+    }
+
+    sortByAngle(edgeList) {
+        return edgeList.sort(function(a, b) {
+            return this.getEdgeAngle(a) - this.getEdgeAngle(b);
+        }.bind(this));
+    }
+
+    getEdgeAngle(edge) {
+        let getX = pt => parseFloat(pt.attr("cx"));
+        let getY = pt => parseFloat(pt.attr("cy"));
+        let pointData = edge.datum();
+        let pt1 = pointData.start, pt2 = pointData.end;
+        let x1 = getX(pt1), x2 = getX(pt2), y1 = getY(pt1), y2 = getY(pt2);
+        return Math.atan2(y1 - y2, x2 - x1) + Math.PI / 2;
     }
 
     restart() {

@@ -25,7 +25,7 @@ export class Plane {
     reduceSize() {
         this.levelsSVG.transition()
             .duration(2000)
-            .attr("transform", "translate(200, 320) scale(0.5)");
+            .attr("transform", "translate(200, 320) scale(0.6)");
     }
 
     setEditable(editable) {
@@ -70,6 +70,9 @@ export class Plane {
                     .attr("cy", y)
                     .attr("r", 0)
                     .attr("name", points.length)
+                    .attr("stroke", "#AAA")
+                    .attr("stroke-width", "8")
+                    .attr("stroke-opacity", "0")
                     .style("fill", "#D5D5D5");
                 points.push(newPoint);
                 newPoint.transition()
@@ -82,7 +85,7 @@ export class Plane {
             }
         }
         else {
-            console.log("Plane editable is " + this.editable);
+            // console.log("Plane editable is " + this.editable);
         }
     }
 

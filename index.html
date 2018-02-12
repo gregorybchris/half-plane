@@ -109,12 +109,15 @@
 				<div data-step="3" class="explanation-section">
 					<p class="explanation-text">
                         We can now visualize these convex layers by listing edges
-                        <span class="emph">sorted by angle</span>. For each layer determined in the last step you can see the
+                        <span class="emph">sorted by angle</span>. For each layer
+						determined in the last step you can see the
                         correspondingly colored edge list above.
                     </p>
                     <p class="explanation-text">
-                        <span class="emph">Try hovering</span> over either elements in the lists or edges in the convex layers.
-                        Recall that the requirement for <a href="https://link.springer.com/article/10.1007%2FBF01840440" target="_blank" class="link">fractional cascading</a>
+                        <span class="emph">Try hovering</span> over either elements
+						in the lists or edges in the convex layers to test the mapping.
+                        Also recall that the requirement for
+						<a href="https://link.springer.com/article/10.1007%2FBF01840440" target="_blank" class="link">fractional cascading</a>
 						is a list of sorted lists.
                         That is exactly what we have here. Press space to see how we can
                         use this to our advantage in half-plane range reporting.
@@ -142,8 +145,9 @@
                         You can now perform efficient queries on the combined convex
                         layers/fractional cascading data structure. To determine the points contained
                         in a query half plane <span class="emph">draw a line segment</span> with your mouse over the
-						convex layers at the bottom.
-                        (Note: The order of the start and end points determines the direction of the half plane.)
+						convex layers at the bottom. For each layer we find the point furthest away from the query line until
+					 	no points in the given layer are in the half plane.
+                        (<span class="emph">Note</span>: The order of the start and end points determines the direction of the half plane.)
                     </p>
 					<p class="explanation-text">
                         I hope you enjoyed this demo! For any comments or suggestions please contact me through my
