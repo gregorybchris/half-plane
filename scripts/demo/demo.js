@@ -32,7 +32,6 @@ export class Demo {
             .attr("width", w)
             .attr("height", h);
         this.cascade = new Cascade(cascadeSVG, this.config);
-        this.render();
         console.log("Demo Config", this.config);
     }
 
@@ -43,24 +42,12 @@ export class Demo {
 
     setFocus() {
         hotkeys("space,r,p", (event, handler) => this.onKeyPress(handler.key));
-        window.addEventListener("resize", this.render.bind(this));
     }
 
     getGraphicsDimensions() {
         let graphicsWidth = this.graphicsContainer.clientWidth;
         let graphicsHeight = this.graphicsContainer.clientHeight;
         return [graphicsWidth, graphicsHeight];
-    }
-
-    render() {
-        // console.log("Demo Render");
-        let [width, height] = this.getGraphicsDimensions();
-        let planeSVG = this.plane.getSVG();
-        planeSVG.attr("width", width)
-            .attr("height", height)
-            .style("background-color", "transparent");
-        this.plane.render();
-        this.cascade.render();
     }
 
     onKeyPress(key) {
@@ -191,6 +178,11 @@ export class Demo {
 
     runQueryStep() {
         console.log("Run Query Step");
+        this.cascadeEdgeLayers();
+        this.plane.allowQueries()
+    }
+
+    cascadeEdgeLayers() {
         let edgeLayers = this.config.getEdgeLayers();
         let newEdgeLayers = edgeLayers.map(edgeLayer => edgeLayer.slice());
         for (var i = newEdgeLayers.length - 1; i > 0 ; i--) {
@@ -247,7 +239,6 @@ export class Demo {
                 this.svg.selectAll("*").remove();
                 this.createGraphicsPanels();
                 this.updateText();
-                this.render();
             }.bind(this)
         );
     }

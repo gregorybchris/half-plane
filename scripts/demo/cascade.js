@@ -30,16 +30,16 @@ export class Cascade {
         let bandwidth = Math.min(xBandwidth, yBandwidth);
         let boxPadding = 2;
 
-        d3.select("#cascadeLists").remove();
-        let cascadeListsSVG = this.svg.append("g").attr("id", "cascadeLists");
+        d3.select("#cascade-lists").remove();
+        let cascadeListsSVG = this.svg.append("g").attr("id", "cascade-lists");
         let boxes = cascadeListsSVG.selectAll("g")
             .data(edgeLayers)
             .enter()
-            .append("g").attr("class", "cascadeList")
+            .append("g").attr("class", "cascade-list")
             .selectAll("g")
             .data(d => d)
             .enter()
-            .append("g").attr("class", "cascadeBox")
+            .append("g").attr("class", "cascade-box")
             // Note: D3 v3 is required here. D3 v4 will not set the j variable in this scope
             .attr("transform", function(d, i, j) {
                 let xTrans = margin.horiz + i * bandwidth + boxPadding;
@@ -53,13 +53,12 @@ export class Cascade {
             .duration(1500)
             .style("opacity", 1);
 
-        let boxBackgrounds = boxes.append("rect").attr("class", "cascadeBoxBackground")
+        let boxBackgrounds = boxes.append("rect").attr("class", "cascade-box-background")
             .attr("x", boxPadding)
             .attr("y", boxPadding)
-            .attr("fill", "#5e5e68")
+            .attr("fill", "#424249")
             .attr("rx", 3)
             .attr("ry", 3)
-            .style("fill-opacity", 0.4)
             .attr("width", bandwidth - boxPadding * 2)
             .attr("height", bandwidth - boxPadding * 2)
 
@@ -86,7 +85,7 @@ export class Cascade {
                 }
 
                 d3.select(this).attr({
-                    class: "cascadeBoxIndicator",
+                    class: "cascade-box-indicator",
                     stroke: stroke,
                     "stroke-width": 3,
                     x1: lx1,
@@ -144,22 +143,18 @@ export class Cascade {
         let edgeData = edge.datum();
         let color;
         if (lit) {
-            color = "#9797a8";
-        }
-        else {
             color = "#5e5e68";
         }
+        else {
+            color = "#424249";
+        }
         edgeData.boxes.forEach(function(edgeBox) {
-            edgeBox.select(".cascadeBoxBackground")
+            edgeBox.select(".cascade-box-background")
                 .attr("fill", color);
         });
     }
 
     getSVG() {
         return this.svg;
-    }
-
-    render() {
-        // console.log("Cascade render", this.svg);
     }
 }
