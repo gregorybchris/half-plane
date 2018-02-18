@@ -142,12 +142,10 @@ export class Cascade {
     toggleLightEdgeBackgrounds(edge, lit) {
         let edgeData = edge.datum();
         let color;
-        if (lit) {
+        if (lit)
             color = "#5e5e68";
-        }
-        else {
+        else
             color = "#424249";
-        }
         edgeData.boxes.forEach(function(edgeBox) {
             edgeBox.select(".cascade-box-background")
                 .attr("fill", color);

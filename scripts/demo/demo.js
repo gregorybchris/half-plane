@@ -179,7 +179,7 @@ export class Demo {
     runQueryStep() {
         console.log("Run Query Step");
         this.cascadeEdgeLayers();
-        this.plane.allowQueries()
+        this.plane.allowQueries();
     }
 
     cascadeEdgeLayers() {

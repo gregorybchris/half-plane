@@ -81,15 +81,16 @@ export class Plane {
             qs.start = loc;
             this.queryHalfPlane.transition()
                 .duration(400)
-                .style("fill-opacity", 0);
+                .style("fill-opacity", 0)
+                .style("stroke-opacity", 0);
             this.svg.append("line")
                 .attr("id", "query-line")
-                .attr("stroke", "#FFF")
+                .attr("stroke", "#DDD")
                 .attr("stroke-width", 2)
                 .attr("x1", x)
                 .attr("y1", y)
                 .attr("x2", x)
-                .attr("y2", y)
+                .attr("y2", y);
         }
         else if (action == "up") {
             qs.mouseDown = false;
@@ -104,12 +105,16 @@ export class Plane {
             this.queryHalfPlane.attr("fill", "#46464b")
                 .attr("x", startX - r)
                 .attr("y", startY)
+                .style("stroke", "4B4B4F")
+                .style("stroke-width", 2)
+                .style("stroke-opacity", 0)
+                .style("fill-opacity", 0)
                 .attr("width", r * 2)
                 .attr("height", r * 2)
                 .attr("transform", "rotate(" + angleDeg + "," + startX + "," + startY + ")")
-                .style("fill-opacity", 0)
                 .transition()
                 .duration(400)
+                .style("stroke-opacity", 0.4)
                 .style("fill-opacity", 0.4);
             this.query(startX, startY, x, y);
         }
@@ -128,6 +133,8 @@ export class Plane {
 
     query(x1, y1, x2, y2) {
         console.log("Query: ", "(" + x1 + ", " + y1 + ") -> (" + x2 + ", " + y2 + ")");
+        let edgeLayers = this.config.getEdgeLayers();
+        console.log("Edge Layers", edgeLayers);
     }
 
     allowQueries() {
