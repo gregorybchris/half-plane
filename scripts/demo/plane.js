@@ -1,3 +1,5 @@
+import { turn } from "./geometry.js";
+
 export class Plane {
     constructor(svg, config) {
         this.svg = svg;
@@ -97,26 +99,27 @@ export class Plane {
             this.svg.selectAll("#query-line").remove();
             let [startX, startY] = qs.start;
             let [endX, endY] = loc;
-            let angleRad = Math.atan2(endY - startY, endX - startX);
-            let angleDeg = this.toDegrees(angleRad);
-            let r = 1000;
-            console.log("Angle of Query (Rad)", angleRad);
-            console.log("Angle of Query (Deg)", angleDeg);
-            this.queryHalfPlane.attr("fill", "#46464b")
-                .attr("x", startX - r)
-                .attr("y", startY)
-                .style("stroke", "4B4B4F")
-                .style("stroke-width", 2)
-                .style("stroke-opacity", 0)
-                .style("fill-opacity", 0)
-                .attr("width", r * 2)
-                .attr("height", r * 2)
-                .attr("transform", "rotate(" + angleDeg + "," + startX + "," + startY + ")")
-                .transition()
-                .duration(400)
-                .style("stroke-opacity", 0.4)
-                .style("fill-opacity", 0.4);
-            this.query(startX, startY, x, y);
+            this.resetQueryColors();
+            if (startX != endX || startY != endY) {
+                let angleRad = Math.atan2(endY - startY, endX - startX);
+                let angleDeg = this.toDegrees(angleRad);
+                let r = 1000;
+                this.queryHalfPlane.attr("fill", "#46464b")
+                    .attr("x", startX - r)
+                    .attr("y", startY)
+                    .style("stroke", "4B4B4F")
+                    .style("stroke-width", 2)
+                    .style("stroke-opacity", 0)
+                    .style("fill-opacity", 0)
+                    .attr("width", r * 2)
+                    .attr("height", r * 2)
+                    .attr("transform", "rotate(" + angleDeg + "," + startX + "," + startY + ")")
+                    .transition()
+                    .duration(400)
+                    .style("stroke-opacity", 0.4)
+                    .style("fill-opacity", 0.4);
+                this.query(startX, startY, x, y);
+            }
         }
         else if (action == "move") {
             if (qs.mouseDown) {
@@ -133,8 +136,51 @@ export class Plane {
 
     query(x1, y1, x2, y2) {
         console.log("Query: ", "(" + x1 + ", " + y1 + ") -> (" + x2 + ", " + y2 + ")");
+        this.resetQueryColors();
+        this.colorQueryIntersection(x1, y1, x2, y2);
+
+    }
+
+    resetQueryColors() {
         let edgeLayers = this.config.getEdgeLayers();
-        console.log("Edge Layers", edgeLayers);
+        edgeLayers.forEach(function(edgeLayer) {
+            edgeLayer.forEach(function(edge) {
+                let edgeData = edge.datum();
+                edge.attr("stroke", edgeData.color);
+                [edgeData.start, edgeData.end].forEach(function(endPoint) {
+                    endPoint.attr("stroke-opacity", 0);
+                });
+            });
+        });
+    }
+
+    colorQueryIntersection(x1, y1, x2, y2) {
+        let getX = pt => parseFloat(pt.attr("cx"));
+        let getY = pt => parseFloat(pt.attr("cy"));
+        let edgeLayers = this.config.getEdgeLayers();
+        let queryPoint = this.queryPoint;
+        edgeLayers.forEach(function(edgeLayer) {
+            edgeLayer.forEach(function(edge) {
+                let edgeData = edge.datum();
+                let startPoint = edgeData.start;
+                let endPoint = edgeData.end;
+                let startX = getX(startPoint), startY = getY(startPoint);
+                let endX = getX(endPoint), endY = getY(endPoint);
+                startX = startX * 0.6 + 200;
+                startY = startY * 0.6 + 320;
+                endX = endX * 0.6 + 200;
+                endY = endY * 0.6 + 320;
+                if (queryPoint(x1, y1, x2, y2, startX, startY))
+                    startPoint.attr("stroke-opacity", 0.5);
+                // if (queryPoint(x1, y1, x2, y2, startX, startY) &&
+                //         queryPoint(x1, y1, x2, y2, endX, endY))
+                //     edge.attr("stroke", "#DDD");
+            });
+        });
+    }
+
+    queryPoint(qx1, qy1, qx2, qy2, px, py) {
+        return turn(qx1, qy1, qx2, qy2, px, py) >= 0 ? true : false;
     }
 
     allowQueries() {

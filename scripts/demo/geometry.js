@@ -23,7 +23,7 @@ function giftWrap(s) {
     let cur = min;
     while (true) {
         var noCurPts = pts.filter(pt => getName(cur) != getName(pt));
-        cur = noCurPts.reduce((a, c) => turn(cur, a, c) >= 0 ? c : a);
+        cur = noCurPts.reduce((a, c) => pointTurn(cur, a, c) >= 0 ? c : a);
         if (getName(cur) == getName(min))
             break;
         else
@@ -33,7 +33,8 @@ function giftWrap(s) {
     return [hull, pts];
 }
 
-var turn = (a, b, c) => ((getX(c) - getX(b)) * (getY(a) - getY(b))) - ((getX(a) - getX(b)) * (getY(c) - getY(b)));
+var turn = (ax, ay, bx, by, cx, cy) => ((cx - bx) * (ay - by)) - ((ax - bx) * (cy - by));
+var pointTurn = (a, b, c) => turn(getX(a), getY(a), getX(b), getY(b), getX(c), getY(c));
 var cos = (a, b) => (getX(a) * getX(b) + getY(a) * getY(b)) / vecMag(a) / vecMag(b);
 var getMinX = pts => pts.reduce((a, c) => getX(a) < getX(c) ? a : c);
 var getX = pt => parseFloat(pt.attr("cx"));
@@ -42,4 +43,4 @@ var getLoc = pt => ({ x: getX(pt), y: getY(pt) });
 var getName = pt => pt.attr("name");
 var vecMag = pt => Math.sqrt(getX(pt) * getX(pt) + getY(pt) * getY(pt));
 
-export { makeConvexLayers }
+export { makeConvexLayers, turn }
